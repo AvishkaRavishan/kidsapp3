@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "534654186450",
+    "project_id": "classroom-75d8f",
+    "storage_bucket": "classroom-75d8f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:534654186450:android:c1708c45dad3296cba8e0b",
+        "android_client_info": {
+          "package_name": "com.example.jema_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuW4dw6QbPc9QJwYAHltnrDtvBTfUeB04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
