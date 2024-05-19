@@ -169,7 +169,7 @@ class _AddStudentState extends State<AddStudentPage> {
                     child: TextField(
                       controller: _birthdayController,
                       decoration: InputDecoration(
-                        hintText: 'Birthday',
+                        hintText: 'Birthday YYYY-MM-DD',
                         filled: true,
                         fillColor: Color.fromARGB(107, 196, 196, 196),
                         border: OutlineInputBorder(
