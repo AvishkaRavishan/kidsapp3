@@ -431,7 +431,9 @@ class ChildrenProfilePage extends StatelessWidget {
                                               children: [
                                                 GestureDetector(
                                                   onTap: () {
-                                                    _getPhoneNumber(user?.uid);
+                                                    _getPhoneNumber(
+                                                        context, user?.uid);
+                                                    print("Phone number:");
                                                   },
                                                   child: Container(
                                                     height: double.infinity,
@@ -605,7 +607,8 @@ class ChildrenProfilePage extends StatelessWidget {
                                       children: [
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 40, vertical: 18), //play game button
+                                              horizontal: 40,
+                                              vertical: 18), //play game button
                                           decoration: ShapeDecoration(
                                             color: Color(0xFF48B62C),
                                             shape: RoundedRectangleBorder(
@@ -680,7 +683,7 @@ class ChildrenProfilePage extends StatelessWidget {
                                                 sid: userDetails.id)),
                                   );
                                 },
-child: Container(
+                                child: Container(
                                   width:
                                       MediaQuery.of(context).size.width * 0.4,
                                   height: 135,
@@ -717,7 +720,8 @@ child: Container(
                                             children: [
                                               Padding(
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 0, 5),
                                                 child: Container(
                                                   width: 16.88,
                                                   height: 16.88,
@@ -738,7 +742,8 @@ child: Container(
                                                   TextSpan(
                                                     children: [
                                                       TextSpan(
-                                                        text: 'Monthly \npsycholo. report \n  ',
+                                                        text:
+                                                            'Monthly \npsycholo. report \n  ',
                                                         style: TextStyle(
                                                           color:
                                                               Color(0xFF403572),
@@ -746,7 +751,7 @@ child: Container(
                                                           fontFamily: 'poppins',
                                                           fontWeight:
                                                               FontWeight.w500,
-                                                              // letterSpacing: 0.08,
+                                                          // letterSpacing: 0.08,
                                                           height: 0.9,
                                                         ),
                                                       ),
@@ -826,7 +831,8 @@ child: Container(
                                             children: [
                                               Padding(
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 0, 5),
                                                 child: Container(
                                                   width: 16.88,
                                                   height: 16.88,
@@ -847,7 +853,8 @@ child: Container(
                                                   TextSpan(
                                                     children: [
                                                       TextSpan(
-                                                        text: 'Monthly prediction report \n',
+                                                        text:
+                                                            'Monthly prediction report \n',
                                                         style: TextStyle(
                                                           color:
                                                               Color(0xFF479696),
@@ -950,7 +957,29 @@ child: Container(
     }
   }
 
-  Future<String?> _getPhoneNumber(userUID) async {
+  Future<void> _makePhoneCall(BuildContext context, String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      print(await canLaunchUrl(phoneUri));
+      if (await canLaunchUrl(phoneUri)) {
+        print('Can launch $phoneUri');
+        await launchUrl(phoneUri);
+        print('Launched $phoneUri');
+      } else {
+        print('Cannot launch $phoneUri');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch $phoneUri')),
+        );
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+  Future<String?> _getPhoneNumber(context, userUID) async {
     try {
       var snapshot = await FirebaseFirestore.instance
           .collection('students')
@@ -961,7 +990,7 @@ child: Container(
         // Assuming 'phone' is the field containing the phone number
         String mobile = snapshot.docs.first['Parentphone'];
         final url = 'tel:$mobile';
-        _launchPhone(url);
+        _makePhoneCall(context, mobile);
       } else {
         return null; // Document not found
       }

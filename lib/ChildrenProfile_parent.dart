@@ -430,9 +430,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                                   CrossAxisAlignment.center,
                                               children: [
                                                 GestureDetector(
-                                                  onTap: () {
-                                                    _getPhoneNumber(user?.uid);
-                                                  },
+                                                  onTap: () => _getPhoneNumber(
+                                                      context, user?.uid),
                                                   child: Container(
                                                     height: double.infinity,
                                                     child: Row(
@@ -605,7 +604,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                       children: [
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 40, vertical: 18), //play game button
+                                              horizontal: 40,
+                                              vertical: 18), //play game button
                                           decoration: ShapeDecoration(
                                             color: Color(0xFF48B62C),
                                             shape: RoundedRectangleBorder(
@@ -717,7 +717,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                             children: [
                                               Padding(
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 0, 5),
                                                 child: Container(
                                                   width: 16.88,
                                                   height: 16.88,
@@ -738,7 +739,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                                   TextSpan(
                                                     children: [
                                                       TextSpan(
-                                                        text: 'Monthly \npsycholo. report \n  ',
+                                                        text:
+                                                            'Monthly \npsycholo. report \n  ',
                                                         style: TextStyle(
                                                           color:
                                                               Color(0xFF403572),
@@ -746,7 +748,7 @@ class pChildrenProfilePage extends StatelessWidget {
                                                           fontFamily: 'poppins',
                                                           fontWeight:
                                                               FontWeight.w500,
-                                                              // letterSpacing: 0.08,
+                                                          // letterSpacing: 0.08,
                                                           height: 0.9,
                                                         ),
                                                       ),
@@ -826,7 +828,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                             children: [
                                               Padding(
                                                 padding:
-                                                    const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 0, 5),
                                                 child: Container(
                                                   width: 16.88,
                                                   height: 16.88,
@@ -847,7 +850,8 @@ class pChildrenProfilePage extends StatelessWidget {
                                                   TextSpan(
                                                     children: [
                                                       TextSpan(
-                                                        text: 'Monthly prediction report \n',
+                                                        text:
+                                                            'Monthly prediction report \n',
                                                         style: TextStyle(
                                                           color:
                                                               Color(0xFF479696),
@@ -942,26 +946,57 @@ class pChildrenProfilePage extends StatelessWidget {
     );
   }
 
-  _launchPhone(url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+  // _launchPhone(url) async {
+  //   if (await canLaunch(url)) {
+  //     await launch(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
+  Future<void> _makePhoneCall(BuildContext context, String phoneNumber) async {
+    final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      print(await canLaunchUrl(phoneUri));
+      if (await canLaunchUrl(phoneUri)) {
+        print('Can launch $phoneUri');
+        await launchUrl(phoneUri);
+        print('Launched $phoneUri');
+      } else {
+        print('Cannot launch $phoneUri');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not launch $phoneUri')),
+        );
+      }
+    } catch (e) {
+      print('Exception caught: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
     }
   }
 
-  Future<String?> _getPhoneNumber(userUID) async {
+  // Future<void> _makePhoneCall(String phoneNumber) async {
+  //   final Uri phoneUri = Uri(scheme: 'tel', path: phoneNumber);
+  //   if (await canLaunchUrl(phoneUri)) {
+  //     await launchUrl(phoneUri);
+  //     print(phoneNumber);
+  //   } else {
+  //     throw 'Could not launch $phoneUri';
+  //   }
+  // }
+
+  Future<String?> _getPhoneNumber(context, userUID) async {
     try {
       var snapshot = await FirebaseFirestore.instance
           .collection('students')
           .where('user', isEqualTo: userUID)
           .get();
-
+      print(userUID);
       if (snapshot.docs.isNotEmpty) {
         // Assuming 'phone' is the field containing the phone number
         String mobile = snapshot.docs.first['Parentphone'];
-        final url = 'tel:$mobile';
-        _launchPhone(url);
+        print(mobile);
+        _makePhoneCall(context, mobile);
       } else {
         return null; // Document not found
       }
@@ -969,6 +1004,7 @@ class pChildrenProfilePage extends StatelessWidget {
       print("Error getting phone number: $e");
       return null;
     }
+    return null;
   }
 
   void calculateAge(birthday) {
@@ -980,6 +1016,7 @@ class pChildrenProfilePage extends StatelessWidget {
         Duration difference = now.difference(birthday);
 
         _age = (difference.inDays / 365).floor();
+        print("Age: $_age");
       } catch (e) {
         print('Invalid date format: $e');
         // Handle invalid date format
